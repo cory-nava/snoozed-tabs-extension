@@ -17,6 +17,7 @@ class PopupManager {
     try {
       const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
       this.currentTab = tab;
+      console.log('Current tab loaded:', tab.title);
     } catch (error) {
       console.error('Error loading current tab:', error);
       this.showToast('Error loading current tab', 'error');
@@ -25,16 +26,36 @@ class PopupManager {
 
   async loadSnoozedTabs() {
     try {
-      const response = await chrome.runtime.sendMessage({
-        action: 'get-snoozed-tabs'
+      console.log('Sending get-snoozed-tabs message to background...');
+      
+      const response = await new Promise((resolve, reject) => {
+        chrome.runtime.sendMessage({
+          action: 'get-snoozed-tabs'
+        }, (response) => {
+          if (chrome.runtime.lastError) {
+            reject(chrome.runtime.lastError);
+          } else {
+            resolve(response);
+          }
+        });
       });
       
-      if (response.tabs) {
+      console.log('Received response from background:', response);
+      
+      if (response && response.tabs) {
         this.snoozedTabs = response.tabs;
+        console.log('Loaded snoozed tabs:', this.snoozedTabs.length);
+      } else if (response && response.error) {
+        console.error('Background script error:', response.error);
+        this.showToast('Background error: ' + response.error, 'error');
+      } else {
+        console.log('No snoozed tabs found or invalid response');
+        this.snoozedTabs = [];
       }
     } catch (error) {
       console.error('Error loading snoozed tabs:', error);
       this.showToast('Error loading snoozed tabs', 'error');
+      this.snoozedTabs = [];
     }
   }
 
@@ -193,26 +214,42 @@ class PopupManager {
   }
 
   async snoozeCurrentTab(option) {
-    if (!this.currentTab) return;
+    if (!this.currentTab) {
+      this.showToast('No current tab found', 'error');
+      return;
+    }
 
     this.showLoading();
+    console.log('Snoozing current tab:', this.currentTab.title, 'with option:', option);
 
     try {
-      const response = await chrome.runtime.sendMessage({
-        action: 'snooze-tab',
-        tabId: this.currentTab.id,
-        snoozeOption: option
+      const response = await new Promise((resolve, reject) => {
+        chrome.runtime.sendMessage({
+          action: 'snooze-tab',
+          tabId: this.currentTab.id,
+          snoozeOption: option
+        }, (response) => {
+          if (chrome.runtime.lastError) {
+            reject(chrome.runtime.lastError);
+          } else {
+            resolve(response);
+          }
+        });
       });
 
-      if (response.success) {
+      console.log('Snooze response:', response);
+
+      if (response && response.success) {
         this.showToast('Tab snoozed successfully', 'success');
         window.close();
+      } else if (response && response.error) {
+        this.showToast('Failed to snooze tab: ' + response.error, 'error');
       } else {
-        this.showToast(response.error || 'Failed to snooze tab', 'error');
+        this.showToast('Failed to snooze tab: Unknown error', 'error');
       }
     } catch (error) {
       console.error('Error snoozing tab:', error);
-      this.showToast('Error snoozing tab', 'error');
+      this.showToast('Error snoozing tab: ' + error.message, 'error');
     } finally {
       this.hideLoading();
     }
@@ -220,23 +257,36 @@ class PopupManager {
 
   async unsnoozeTab(tabId) {
     this.showLoading();
+    console.log('Unsnoozing tab:', tabId);
 
     try {
-      const response = await chrome.runtime.sendMessage({
-        action: 'unsnooze-tab',
-        snoozedTabId: tabId
+      const response = await new Promise((resolve, reject) => {
+        chrome.runtime.sendMessage({
+          action: 'unsnooze-tab',
+          snoozedTabId: tabId
+        }, (response) => {
+          if (chrome.runtime.lastError) {
+            reject(chrome.runtime.lastError);
+          } else {
+            resolve(response);
+          }
+        });
       });
 
-      if (response.success) {
+      console.log('Unsnooze response:', response);
+
+      if (response && response.success) {
         this.showToast('Tab unsnoozed successfully', 'success');
         await this.loadSnoozedTabs();
         this.updateSnoozedTabsList();
+      } else if (response && response.error) {
+        this.showToast('Failed to unsnooze tab: ' + response.error, 'error');
       } else {
-        this.showToast(response.error || 'Failed to unsnooze tab', 'error');
+        this.showToast('Failed to unsnooze tab: Unknown error', 'error');
       }
     } catch (error) {
       console.error('Error unsnoozing tab:', error);
-      this.showToast('Error unsnoozing tab', 'error');
+      this.showToast('Error unsnoozing tab: ' + error.message, 'error');
     } finally {
       this.hideLoading();
     }
@@ -246,21 +296,31 @@ class PopupManager {
     this.showLoading();
 
     try {
-      const response = await chrome.runtime.sendMessage({
-        action: 'unsnooze-tab',
-        snoozedTabId: tabId
+      const response = await new Promise((resolve, reject) => {
+        chrome.runtime.sendMessage({
+          action: 'unsnooze-tab',
+          snoozedTabId: tabId
+        }, (response) => {
+          if (chrome.runtime.lastError) {
+            reject(chrome.runtime.lastError);
+          } else {
+            resolve(response);
+          }
+        });
       });
 
-      if (response.success) {
+      if (response && response.success) {
         this.showToast('Tab removed successfully', 'success');
         await this.loadSnoozedTabs();
         this.updateSnoozedTabsList();
+      } else if (response && response.error) {
+        this.showToast('Failed to remove tab: ' + response.error, 'error');
       } else {
-        this.showToast(response.error || 'Failed to remove tab', 'error');
+        this.showToast('Failed to remove tab: Unknown error', 'error');
       }
     } catch (error) {
       console.error('Error removing tab:', error);
-      this.showToast('Error removing tab', 'error');
+      this.showToast('Error removing tab: ' + error.message, 'error');
     } finally {
       this.hideLoading();
     }
@@ -299,23 +359,33 @@ class PopupManager {
     this.showLoading();
 
     try {
-      const response = await chrome.runtime.sendMessage({
-        action: 'update-snooze-time',
-        snoozedTabId: this.currentEditingTab.id,
-        newTime: option
+      const response = await new Promise((resolve, reject) => {
+        chrome.runtime.sendMessage({
+          action: 'update-snooze-time',
+          snoozedTabId: this.currentEditingTab.id,
+          newTime: option
+        }, (response) => {
+          if (chrome.runtime.lastError) {
+            reject(chrome.runtime.lastError);
+          } else {
+            resolve(response);
+          }
+        });
       });
 
-      if (response.success) {
+      if (response && response.success) {
         this.showToast('Snooze time updated successfully', 'success');
         this.closeModal();
         await this.loadSnoozedTabs();
         this.updateSnoozedTabsList();
+      } else if (response && response.error) {
+        this.showToast('Failed to update snooze time: ' + response.error, 'error');
       } else {
-        this.showToast(response.error || 'Failed to update snooze time', 'error');
+        this.showToast('Failed to update snooze time: Unknown error', 'error');
       }
     } catch (error) {
       console.error('Error updating snooze time:', error);
-      this.showToast('Error updating snooze time', 'error');
+      this.showToast('Error updating snooze time: ' + error.message, 'error');
     } finally {
       this.hideLoading();
     }
@@ -330,9 +400,17 @@ class PopupManager {
 
     try {
       const clearPromises = this.snoozedTabs.map(tab =>
-        chrome.runtime.sendMessage({
-          action: 'unsnooze-tab',
-          snoozedTabId: tab.id
+        new Promise((resolve, reject) => {
+          chrome.runtime.sendMessage({
+            action: 'unsnooze-tab',
+            snoozedTabId: tab.id
+          }, (response) => {
+            if (chrome.runtime.lastError) {
+              reject(chrome.runtime.lastError);
+            } else {
+              resolve(response);
+            }
+          });
         })
       );
 
@@ -342,7 +420,7 @@ class PopupManager {
       this.updateSnoozedTabsList();
     } catch (error) {
       console.error('Error clearing all tabs:', error);
-      this.showToast('Error clearing all tabs', 'error');
+      this.showToast('Error clearing all tabs: ' + error.message, 'error');
     } finally {
       this.hideLoading();
     }
