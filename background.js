@@ -245,7 +245,10 @@ class SnoozeService {
     // Set up event listeners
     chrome.contextMenus.onClicked.addListener(this.handleContextMenu.bind(this));
     chrome.alarms.onAlarm.addListener(this.handleAlarm.bind(this));
-    chrome.runtime.onMessage.addListener(this.handleMessage.bind(this));
+    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+      this.handleMessage(request, sender, sendResponse);
+      return true; // Keep message channel open for async response
+    });
     
     // Clean up and restore any tabs that should be unsnoozed
     await this.restoreExpiredTabs();
@@ -266,36 +269,41 @@ class SnoozeService {
     try {
       switch (request.action) {
         case 'snooze-tab':
+          console.log('Processing snooze-tab request for tab:', request.tabId);
           await this.snoozeTab(request.tabId, request.snoozeOption);
+          console.log('Snooze-tab request completed successfully');
           sendResponse({ success: true });
           break;
           
         case 'unsnooze-tab':
+          console.log('Processing unsnooze-tab request for tab:', request.snoozedTabId);
           await this.unsnoozeTab(request.snoozedTabId);
+          console.log('Unsnooze-tab request completed successfully');
           sendResponse({ success: true });
           break;
           
         case 'get-snoozed-tabs':
+          console.log('Processing get-snoozed-tabs request');
           const tabs = await this.getSnoozedTabs();
           console.log('Returning snoozed tabs:', tabs.length);
-          sendResponse({ tabs });
+          sendResponse({ success: true, tabs: tabs });
           break;
           
         case 'update-snooze-time':
+          console.log('Processing update-snooze-time request');
           await this.updateSnoozeTime(request.snoozedTabId, request.newTime);
+          console.log('Update-snooze-time request completed successfully');
           sendResponse({ success: true });
           break;
           
         default:
           console.log('Unknown action:', request.action);
-          sendResponse({ error: 'Unknown action' });
+          sendResponse({ success: false, error: 'Unknown action' });
       }
     } catch (error) {
       console.error('Error handling message:', error);
-      sendResponse({ error: error.message });
+      sendResponse({ success: false, error: error.message });
     }
-    
-    return true; // Keep message channel open for async response
   }
 
   async snoozeTab(tabId, snoozeOption) {
@@ -353,11 +361,15 @@ class SnoozeService {
       console.log(`Tab unsnoozed: ${snoozedTab.title}`);
       
       return newTab;
+    } else {
+      console.log('Snoozed tab not found:', snoozedTabId);
     }
   }
 
   async getSnoozedTabs() {
-    return await this.storage.getAllSnoozedTabs();
+    const tabs = await this.storage.getAllSnoozedTabs();
+    console.log('Retrieved snoozed tabs from storage:', tabs.length);
+    return tabs;
   }
 
   async updateSnoozeTime(snoozedTabId, newSnoozeOption) {
@@ -380,6 +392,8 @@ class SnoozeService {
           when: newUnsnoozeTime
         });
       }
+      
+      console.log(`Updated snooze time for tab ${snoozedTabId} to ${newSnoozeOption}`);
     }
   }
 
