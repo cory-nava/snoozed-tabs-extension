@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snoozed Tabs</title>
+  <link rel="stylesheet" href="../styles/popup.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1 class="title">Snoozed Tabs</h1>
+      <button id="view-snoozed-btn" class="view-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+        View Snoozed
+      </button>
+    </div>
+
+    <!-- Main Content -->
+    <div id="main-content">
+      <!-- Snooze Tab Section -->
+      <div id="snooze-section" class="section">
+        <div class="current-tab">
+          <div class="tab-info">
+            <img id="tab-favicon" class="favicon" src="" alt="">
+            <div class="tab-details">
+              <div id="tab-title" class="tab-title"></div>
+              <div id="tab-url" class="tab-url"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="snooze-options">
+          <h3>Snooze this tab until:</h3>
+          <div class="options-grid">
+            <button class="snooze-btn" data-option="later-today">
+              <span class="option-label">Later Today</span>
+              <span class="option-time">3 hours from now</span>
+            </button>
+            <button class="snooze-btn" data-option="tonight">
+              <span class="option-label">Tonight</span>
+              <span class="option-time">6pm today</span>
+            </button>
+            <button class="snooze-btn" data-option="tomorrow">
+              <span class="option-label">Tomorrow</span>
+              <span class="option-time">8am tomorrow</span>
+            </button>
+            <button class="snooze-btn" data-option="later-this-week">
+              <span class="option-label">Later This Week</span>
+              <span class="option-time">3 days from now</span>
+            </button>
+            <button class="snooze-btn" data-option="this-weekend">
+              <span class="option-label">This Weekend</span>
+              <span class="option-time">8am Saturday</span>
+            </button>
+            <button class="snooze-btn" data-option="next-week">
+              <span class="option-label">Next Week</span>
+              <span class="option-time">8am next Monday</span>
+            </button>
+            <button class="snooze-btn" data-option="couple-weeks">
+              <span class="option-label">In a Couple Weeks</span>
+              <span class="option-time">2 weeks from now</span>
+            </button>
+            <button class="snooze-btn" data-option="next-month">
+              <span class="option-label">Next Month</span>
+              <span class="option-time">30 days from now</span>
+            </button>
+            <button class="snooze-btn" data-option="someday">
+              <span class="option-label">Someday</span>
+              <span class="option-time">Indefinitely</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Snoozed Tabs List -->
+      <div id="snoozed-list-section" class="section hidden">
+        <div class="section-header">
+          <button id="back-btn" class="back-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 12H5m7-7l-7 7 7 7"/>
+            </svg>
+            Back to Snooze
+          </button>
+          <h3>Snoozed Tabs</h3>
+          <button id="clear-all-btn" class="clear-all-btn">Clear All</button>
+        </div>
+
+        <div id="snoozed-tabs-container" class="snoozed-tabs-container">
+          <div id="empty-state" class="empty-state">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M12 2v20m8-10H4"/>
+            </svg>
+            <p>No snoozed tabs</p>
+            <span>Tabs you snooze will appear here</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="edit-modal" class="modal hidden">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Edit Snooze Time</h3>
+          <button id="close-modal" class="close-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 6L6 18M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="tab-info">
+            <img id="modal-favicon" class="favicon" src="" alt="">
+            <div class="tab-details">
+              <div id="modal-title" class="tab-title"></div>
+              <div id="modal-url" class="tab-url"></div>
+            </div>
+          </div>
+          <div class="snooze-options">
+            <h4>Change snooze time to:</h4>
+            <div class="options-grid">
+              <button class="edit-snooze-btn" data-option="later-today">
+                <span class="option-label">Later Today</span>
+                <span class="option-time">3 hours from now</span>
+              </button>
+              <button class="edit-snooze-btn" data-option="tonight">
+                <span class="option-label">Tonight</span>
+                <span class="option-time">6pm today</span>
+              </button>
+              <button class="edit-snooze-btn" data-option="tomorrow">
+                <span class="option-label">Tomorrow</span>
+                <span class="option-time">8am tomorrow</span>
+              </button>
+              <button class="edit-snooze-btn" data-option="later-this-week">
+                <span class="option-label">Later This Week</span>
+                <span class="option-time">3 days from now</span>
+              </button>
+              <button class="edit-snooze-btn" data-option="this-weekend">
+                <span class="option-label">This Weekend</span>
+                <span class="option-time">8am Saturday</span>
+              </button>
+              <button class="edit-snooze-btn" data-option="next-week">
+                <span class="option-label">Next Week</span>
+                <span class="option-time">8am next Monday</span>
+              </button>
+              <button class="edit-snooze-btn" data-option="couple-weeks">
+                <span class="option-label">In a Couple Weeks</span>
+                <span class="option-time">2 weeks from now</span>
+              </button>
+              <button class="edit-snooze-btn" data-option="next-month">
+                <span class="option-label">Next Month</span>
+                <span class="option-time">30 days from now</span>
+              </button>
+              <button class="edit-snooze-btn" data-option="someday">
+                <span class="option-label">Someday</span>
+                <span class="option-time">Indefinitely</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div id="loading" class="loading hidden">
+      <div class="spinner"></div>
+      <p>Processing...</p>
+    </div>
+
+    <!-- Toast Messages -->
+    <div id="toast-container" class="toast-container"></div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
