@@ -11,8 +11,8 @@ body {
   line-height: 1.5;
   color: #1f2937;
   background: #ffffff;
-  min-width: 400px;
-  max-width: 400px;
+  min-width: 500px;
+  max-width: 500px;
   min-height: 500px;
 }
 
@@ -120,8 +120,8 @@ body {
 .options-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  max-width: 360px;
+  gap: 12px;
+  max-width: 460px;
   margin: 0 auto;
 }
 
@@ -132,14 +132,14 @@ body {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  padding: 14px 8px;
+  padding: 16px 12px;
   background: #ffffff;
   border: 1px solid #d1d5db;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
   text-align: center;
-  min-height: 90px;
+  min-height: 100px;
 }
 
 .snooze-btn:hover,
@@ -155,8 +155,8 @@ body {
 }
 
 .option-icon {
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   flex-shrink: 0;
   opacity: 0.7;
   transition: opacity 0.2s ease;
@@ -168,7 +168,7 @@ body {
 }
 
 .option-label {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   color: #111827;
   line-height: 1.2;
@@ -176,7 +176,7 @@ body {
 }
 
 .option-time {
-  font-size: 9px;
+  font-size: 10px;
   color: #6b7280;
   line-height: 1.2;
   text-align: center;
@@ -367,7 +367,7 @@ body {
 .modal-content {
   background: white;
   border-radius: 12px;
-  width: 360px;
+  width: 460px;
   max-height: 80vh;
   overflow-y: auto;
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
@@ -555,7 +555,7 @@ body {
 }
 
 /* Responsive adjustments */
-@media (max-width: 420px) {
+@media (max-width: 520px) {
   body {
     min-width: 320px;
   }
