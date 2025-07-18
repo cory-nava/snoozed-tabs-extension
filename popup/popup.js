@@ -216,14 +216,37 @@ class PopupManager {
       </div>
     `;
 
-    // Add event listeners
+    // Add click handler to entire tab item to unsnooze
+    div.addEventListener('click', (e) => {
+      // Only trigger if clicking on the main area, not on action buttons
+      if (!e.target.closest('.snoozed-tab-actions')) {
+        this.unsnoozeTab(tab.id);
+      }
+    });
+
+    // Add visual feedback for clickable area
+    div.style.cursor = 'pointer';
+
+    // Add event listeners for action buttons
     const editBtn = div.querySelector('.edit');
     const unsnoozeBtn = div.querySelector('.unsnooze');
     const removeBtn = div.querySelector('.remove');
 
-    editBtn.addEventListener('click', () => this.editSnoozeTime(tab));
-    unsnoozeBtn.addEventListener('click', () => this.unsnoozeTab(tab.id));
-    removeBtn.addEventListener('click', () => this.removeSnoozedTab(tab.id));
+    // Stop propagation on action buttons to prevent tab opening
+    editBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.editSnoozeTime(tab);
+    });
+
+    unsnoozeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.unsnoozeTab(tab.id);
+    });
+
+    removeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.removeSnoozedTab(tab.id);
+    });
 
     // Handle favicon error
     const favicon = div.querySelector('.favicon');
