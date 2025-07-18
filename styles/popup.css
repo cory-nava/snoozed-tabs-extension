@@ -50,12 +50,11 @@ body {
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease;
 }
 
 .view-btn:hover {
   background: #2563eb;
-  transform: translateY(-1px);
 }
 
 .view-btn:active {
@@ -124,7 +123,7 @@ body {
 
 .options-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 8px;
 }
 
@@ -147,7 +146,6 @@ body {
 .edit-snooze-btn:hover {
   border-color: #3b82f6;
   background: #eff6ff;
-  transform: translateY(-1px);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
@@ -186,12 +184,11 @@ body {
   font-size: 13px;
   color: #374151;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease;
 }
 
 .back-btn:hover {
   background: #e5e7eb;
-  transform: translateY(-1px);
 }
 
 .clear-all-btn {
@@ -203,12 +200,11 @@ body {
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease;
 }
 
 .clear-all-btn:hover {
   background: #b91c1c;
-  transform: translateY(-1px);
 }
 
 /* Snoozed Tabs Container */
@@ -232,7 +228,6 @@ body {
 .snoozed-tab-item:hover {
   border-color: #3b82f6;
   background: #eff6ff;
-  transform: translateY(-1px);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
@@ -268,7 +263,6 @@ body {
 
 .action-btn:hover {
   background: #e5e7eb;
-  transform: translateY(-1px);
 }
 
 .action-btn.edit {
@@ -376,7 +370,7 @@ body {
   border: 1px solid #d1d5db;
   border-radius: 4px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease;
 }
 
 .close-btn:hover {
@@ -392,6 +386,49 @@ body {
   font-size: 14px;
   font-weight: 600;
   color: #111827;
+}
+
+.modal-body p {
+  margin-bottom: 20px;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.cancel-btn {
+  padding: 8px 16px;
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #374151;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.cancel-btn:hover {
+  background: #e5e7eb;
+}
+
+.confirm-btn {
+  padding: 8px 16px;
+  background: #dc2626;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.confirm-btn:hover {
+  background: #b91c1c;
 }
 
 /* Loading */
@@ -497,7 +534,7 @@ body {
   }
   
   .options-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
   }
   
   .modal-content {
@@ -528,7 +565,9 @@ body {
 .back-btn:focus,
 .clear-all-btn:focus,
 .action-btn:focus,
-.close-btn:focus {
+.close-btn:focus,
+.cancel-btn:focus,
+.confirm-btn:focus {
   outline: 2px solid #3b82f6;
   outline-offset: 2px;
 }
