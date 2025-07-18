@@ -227,6 +227,27 @@ class SnoozedTabsContent {
     });
   }
 
+  // Safe message sending with error handling
+  safeSendMessage(message, callback) {
+    try {
+      if (chrome.runtime && chrome.runtime.sendMessage) {
+        chrome.runtime.sendMessage(message, (response) => {
+          if (chrome.runtime.lastError) {
+            // Extension context invalidated - ignore silently
+            console.debug('Extension context invalidated, ignoring message:', chrome.runtime.lastError.message);
+            return;
+          }
+          if (callback) {
+            callback(response);
+          }
+        });
+      }
+    } catch (error) {
+      // Extension context invalidated - ignore silently
+      console.debug('Extension context invalidated, message not sent:', error.message);
+    }
+  }
+
   notifyPageChanged() {
     // Throttle notifications to avoid spam
     if (this.lastNotification && Date.now() - this.lastNotification < 5000) {
@@ -235,33 +256,27 @@ class SnoozedTabsContent {
 
     this.lastNotification = Date.now();
     
-    chrome.runtime.sendMessage({
+    this.safeSendMessage({
       action: 'page-changed',
       url: window.location.href,
       title: document.title,
       timestamp: Date.now()
-    }).catch(() => {
-      // Extension might be inactive, ignore error
     });
   }
 
   notifyPageVisible() {
-    chrome.runtime.sendMessage({
+    this.safeSendMessage({
       action: 'page-visible',
       url: window.location.href,
       timestamp: Date.now()
-    }).catch(() => {
-      // Extension might be inactive, ignore error
     });
   }
 
   notifyPageUnloading() {
-    chrome.runtime.sendMessage({
+    this.safeSendMessage({
       action: 'page-unloading',
       url: window.location.href,
       timestamp: Date.now()
-    }).catch(() => {
-      // Extension might be inactive, ignore error
     });
   }
 
