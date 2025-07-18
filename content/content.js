@@ -209,10 +209,13 @@ class SnoozedTabsContent {
       });
     });
 
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true
-    });
+    // Only observe if body exists
+    if (document.body) {
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true
+      });
+    }
 
     // Monitor for page visibility changes
     document.addEventListener('visibilitychange', () => {
@@ -227,24 +230,45 @@ class SnoozedTabsContent {
     });
   }
 
-  // Safe message sending with error handling
+  // Safe message sending with comprehensive error handling
   safeSendMessage(message, callback) {
     try {
-      if (chrome.runtime && chrome.runtime.sendMessage) {
-        chrome.runtime.sendMessage(message, (response) => {
-          if (chrome.runtime.lastError) {
-            // Extension context invalidated - ignore silently
-            console.debug('Extension context invalidated, ignoring message:', chrome.runtime.lastError.message);
+      // Check if chrome runtime is available
+      if (!chrome || !chrome.runtime) {
+        console.debug('Chrome runtime not available');
+        return;
+      }
+
+      // Check if sendMessage function exists
+      if (typeof chrome.runtime.sendMessage !== 'function') {
+        console.debug('Chrome runtime sendMessage not available');
+        return;
+      }
+
+      // Send the message with error handling
+      chrome.runtime.sendMessage(message, (response) => {
+        // Check for common extension context errors
+        if (chrome.runtime.lastError) {
+          const errorMessage = chrome.runtime.lastError.message;
+          if (errorMessage.includes('Extension context invalidated') || 
+              errorMessage.includes('message channel closed') ||
+              errorMessage.includes('receiving end does not exist')) {
+            // These are expected errors when extension is reloaded/updated
+            console.debug('Extension context invalidated, ignoring message:', errorMessage);
             return;
           }
-          if (callback) {
-            callback(response);
-          }
-        });
-      }
+          console.warn('Chrome runtime error:', errorMessage);
+          return;
+        }
+
+        // Execute callback if provided
+        if (callback && typeof callback === 'function') {
+          callback(response);
+        }
+      });
     } catch (error) {
-      // Extension context invalidated - ignore silently
-      console.debug('Extension context invalidated, message not sent:', error.message);
+      // Catch any synchronous errors
+      console.debug('Extension context error:', error.message);
     }
   }
 
@@ -300,36 +324,48 @@ class SnoozedTabsContent {
   }
 
   hasUnsavedChanges() {
-    // Check for unsaved form data
-    const forms = document.querySelectorAll('form');
-    for (let form of forms) {
-      const inputs = form.querySelectorAll('input, textarea, select');
-      for (let input of inputs) {
-        if (input.value && input.value !== input.defaultValue) {
+    try {
+      // Check for unsaved form data
+      const forms = document.querySelectorAll('form');
+      for (let form of forms) {
+        const inputs = form.querySelectorAll('input, textarea, select');
+        for (let input of inputs) {
+          if (input.value && input.value !== input.defaultValue) {
+            return true;
+          }
+        }
+      }
+
+      // Check for contentEditable elements
+      const editables = document.querySelectorAll('[contenteditable="true"]');
+      for (let editable of editables) {
+        if (editable.textContent && editable.textContent.trim() !== '') {
           return true;
         }
       }
-    }
 
-    // Check for contentEditable elements
-    const editables = document.querySelectorAll('[contenteditable="true"]');
-    for (let editable of editables) {
-      if (editable.textContent && editable.textContent.trim() !== '') {
-        return true;
-      }
+      return false;
+    } catch (error) {
+      console.warn('Error checking unsaved changes:', error);
+      return false;
     }
+  }
+}
 
-    return false;
+// Initialize content script safely
+function initializeContentScript() {
+  try {
+    new SnoozedTabsContent();
+  } catch (error) {
+    console.debug('Content script initialization error:', error.message);
   }
 }
 
 // Initialize content script when DOM is ready
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => {
-    new SnoozedTabsContent();
-  });
+  document.addEventListener('DOMContentLoaded', initializeContentScript);
 } else {
-  new SnoozedTabsContent();
+  initializeContentScript();
 }
 
 // Export for testing purposes
