@@ -85,9 +85,22 @@ class PopupManager {
       });
     });
 
-    // Clear all button
+    // Clear all button - now shows confirmation modal
     document.getElementById('clear-all-btn').addEventListener('click', () => {
+      this.showClearAllConfirmation();
+    });
+
+    // Clear all confirmation modal buttons
+    document.getElementById('confirm-clear-btn').addEventListener('click', () => {
       this.clearAllSnoozedTabs();
+    });
+
+    document.getElementById('cancel-clear-btn').addEventListener('click', () => {
+      this.hideClearAllConfirmation();
+    });
+
+    document.getElementById('close-clear-modal').addEventListener('click', () => {
+      this.hideClearAllConfirmation();
     });
 
     // Modal controls
@@ -102,10 +115,18 @@ class PopupManager {
       }
     });
 
+    // Click outside clear all modal to close
+    document.getElementById('clear-all-modal').addEventListener('click', (e) => {
+      if (e.target.id === 'clear-all-modal') {
+        this.hideClearAllConfirmation();
+      }
+    });
+
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         this.closeModal();
+        this.hideClearAllConfirmation();
       }
     });
   }
@@ -135,12 +156,15 @@ class PopupManager {
     const container = document.getElementById('snoozed-tabs-container');
     const emptyState = document.getElementById('empty-state');
 
+    // Clear existing snoozed tab items first
+    container.querySelectorAll('.snoozed-tab-item').forEach(item => item.remove());
+
     if (this.snoozedTabs.length === 0) {
       emptyState.classList.remove('hidden');
-      container.querySelectorAll('.snoozed-tab-item').forEach(item => item.remove());
       return;
     }
 
+    // Hide empty state when there are snoozed tabs
     emptyState.classList.add('hidden');
 
     // Sort tabs by unsnooze time
@@ -149,9 +173,6 @@ class PopupManager {
       if (a.snoozeOption !== 'someday' && b.snoozeOption === 'someday') return -1;
       return a.unsnoozeAt - b.unsnoozeAt;
     });
-
-    // Clear existing items
-    container.querySelectorAll('.snoozed-tab-item').forEach(item => item.remove());
 
     // Add snoozed tabs
     sortedTabs.forEach(tab => {
@@ -353,6 +374,18 @@ class PopupManager {
     this.currentEditingTab = null;
   }
 
+  showClearAllConfirmation() {
+    if (this.snoozedTabs.length === 0) {
+      this.showToast('No snoozed tabs to clear', 'info');
+      return;
+    }
+    document.getElementById('clear-all-modal').classList.remove('hidden');
+  }
+
+  hideClearAllConfirmation() {
+    document.getElementById('clear-all-modal').classList.add('hidden');
+  }
+
   async updateSnoozeTime(option) {
     if (!this.currentEditingTab) return;
 
@@ -392,10 +425,7 @@ class PopupManager {
   }
 
   async clearAllSnoozedTabs() {
-    if (!confirm('Are you sure you want to clear all snoozed tabs?')) {
-      return;
-    }
-
+    this.hideClearAllConfirmation();
     this.showLoading();
 
     try {
