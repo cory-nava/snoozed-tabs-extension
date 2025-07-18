@@ -84,7 +84,7 @@
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M19 12H5m7-7l-7 7 7 7"/>
             </svg>
-            Back to Snooze
+            Back
           </button>
           <h3>Snoozed Tabs</h3>
           <button id="clear-all-btn" class="clear-all-btn">Clear All</button>
@@ -174,6 +174,27 @@
 
     <!-- Toast Messages -->
     <div id="toast-container" class="toast-container"></div>
+
+    <!-- Clear All Confirmation Modal -->
+    <div id="clear-all-modal" class="modal hidden">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Clear All Snoozed Tabs</h3>
+          <button id="close-clear-modal" class="close-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 6L6 18M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>Are you sure you want to clear all snoozed tabs? This action cannot be undone.</p>
+          <div class="modal-actions">
+            <button id="cancel-clear-btn" class="cancel-btn">Cancel</button>
+            <button id="confirm-clear-btn" class="confirm-btn">Clear All</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script src="popup.js"></script>
