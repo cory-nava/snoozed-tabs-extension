@@ -237,6 +237,7 @@ body {
   border-radius: 8px;
   margin-bottom: 8px;
   background: #ffffff;
+  cursor: pointer;
   transition: all 0.2s ease;
 }
 
@@ -246,9 +247,18 @@ body {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
+.snoozed-tab-item:hover .snoozed-tab-content {
+  color: #1f2937;
+}
+
+.snoozed-tab-item:hover .tab-title {
+  color: #111827;
+}
+
 .snoozed-tab-content {
   flex: 1;
   min-width: 0;
+  transition: color 0.2s ease;
 }
 
 .snooze-time {
