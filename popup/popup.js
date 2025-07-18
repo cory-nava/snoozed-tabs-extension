@@ -132,24 +132,7 @@ class PopupManager {
   }
 
   updateUI() {
-    this.updateCurrentTabInfo();
     this.updateSnoozedTabsList();
-  }
-
-  updateCurrentTabInfo() {
-    if (!this.currentTab) return;
-
-    const favicon = document.getElementById('tab-favicon');
-    const title = document.getElementById('tab-title');
-    const url = document.getElementById('tab-url');
-
-    favicon.src = this.currentTab.favIconUrl || '/icons/default-favicon.png';
-    favicon.onerror = () => {
-      favicon.src = '/icons/default-favicon.png';
-    };
-
-    title.textContent = this.currentTab.title || 'Untitled Tab';
-    url.textContent = this.getDomain(this.currentTab.url);
   }
 
   updateSnoozedTabsList() {
