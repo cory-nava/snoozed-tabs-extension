@@ -281,6 +281,13 @@ class SnoozeService {
           console.log('Unsnooze-tab request completed successfully');
           sendResponse({ success: true });
           break;
+
+        case 'remove-snoozed-tab':
+          console.log('Processing remove-snoozed-tab request for tab:', request.snoozedTabId);
+          await this.removeSnoozedTab(request.snoozedTabId);
+          console.log('Remove-snoozed-tab request completed successfully');
+          sendResponse({ success: true });
+          break;
           
         case 'get-snoozed-tabs':
           console.log('Processing get-snoozed-tabs request');
@@ -361,6 +368,24 @@ class SnoozeService {
       console.log(`Tab unsnoozed: ${snoozedTab.title}`);
       
       return newTab;
+    } else {
+      console.log('Snoozed tab not found:', snoozedTabId);
+    }
+  }
+
+  async removeSnoozedTab(snoozedTabId) {
+    console.log('Removing snoozed tab permanently:', snoozedTabId);
+    
+    const snoozedTab = await this.storage.getSnoozedTab(snoozedTabId);
+    
+    if (snoozedTab) {
+      // Remove from storage without creating a new tab
+      await this.storage.removeSnoozedTab(snoozedTabId);
+      
+      // Clear alarm
+      chrome.alarms.clear(`unsnooze_${snoozedTabId}`);
+      
+      console.log(`Snoozed tab removed permanently: ${snoozedTab.title}`);
     } else {
       console.log('Snoozed tab not found:', snoozedTabId);
     }
