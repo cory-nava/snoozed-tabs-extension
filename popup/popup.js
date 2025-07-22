@@ -139,15 +139,20 @@ class PopupManager {
     const container = document.getElementById('snoozed-tabs-container');
     const emptyState = document.getElementById('empty-state');
 
+    console.log('Updating snoozed tabs list. Count:', this.snoozedTabs.length);
+
     // Clear existing snoozed tab items first
     container.querySelectorAll('.snoozed-tab-item').forEach(item => item.remove());
 
-    if (this.snoozedTabs.length === 0) {
+    // Check if we have snoozed tabs
+    if (!this.snoozedTabs || this.snoozedTabs.length === 0) {
+      console.log('No snoozed tabs, showing empty state');
       emptyState.classList.remove('hidden');
       return;
     }
 
     // Hide empty state when there are snoozed tabs
+    console.log('Have snoozed tabs, hiding empty state');
     emptyState.classList.add('hidden');
 
     // Sort tabs by unsnooze time
@@ -228,7 +233,8 @@ class PopupManager {
 
     removeBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      this.removeSnoozedTab(tab.id);
+      // Use the new remove function that doesn't open the tab
+      this.removeSnoozedTabPermanently(tab.id);
     });
 
     // Handle favicon error
@@ -319,13 +325,14 @@ class PopupManager {
     }
   }
 
-  async removeSnoozedTab(tabId) {
+  async removeSnoozedTabPermanently(tabId) {
     this.showLoading();
+    console.log('Removing snoozed tab permanently:', tabId);
 
     try {
       const response = await new Promise((resolve, reject) => {
         chrome.runtime.sendMessage({
-          action: 'unsnooze-tab',
+          action: 'remove-snoozed-tab',
           snoozedTabId: tabId
         }, (response) => {
           if (chrome.runtime.lastError) {
@@ -335,6 +342,8 @@ class PopupManager {
           }
         });
       });
+
+      console.log('Remove response:', response);
 
       if (response && response.success) {
         this.showToast('Tab removed successfully', 'success');
@@ -351,6 +360,12 @@ class PopupManager {
     } finally {
       this.hideLoading();
     }
+  }
+
+  // Keep the old method for backward compatibility but rename it to be clear
+  async removeSnoozedTab(tabId) {
+    // This method unsnoozes and opens the tab
+    return this.unsnoozeTab(tabId);
   }
 
   editSnoozeTime(tab) {
@@ -438,7 +453,7 @@ class PopupManager {
       const clearPromises = this.snoozedTabs.map(tab =>
         new Promise((resolve, reject) => {
           chrome.runtime.sendMessage({
-            action: 'unsnooze-tab',
+            action: 'remove-snoozed-tab',
             snoozedTabId: tab.id
           }, (response) => {
             if (chrome.runtime.lastError) {
@@ -470,6 +485,8 @@ class PopupManager {
   showSnoozedList() {
     document.getElementById('snooze-section').classList.add('hidden');
     document.getElementById('snoozed-list-section').classList.remove('hidden');
+    // Refresh the list when showing it to ensure it's up to date
+    this.updateSnoozedTabsList();
   }
 
   showLoading() {
