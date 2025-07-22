@@ -1,8 +1,11 @@
+import { TimeCalculator } from '../utils/time.js';
+
 class PopupManager {
   constructor() {
     this.currentTab = null;
     this.snoozedTabs = [];
     this.currentEditingTab = null;
+    this.timeCalculator = new TimeCalculator();
     this.init();
   }
 
@@ -75,6 +78,15 @@ class PopupManager {
         const option = e.currentTarget.dataset.option;
         this.snoozeCurrentTab(option);
       });
+
+      btn.addEventListener('mouseenter', (e) => {
+        const option = e.currentTarget.dataset.option;
+        this.showSnoozeDetails(option);
+      });
+
+      btn.addEventListener('mouseleave', () => {
+        this.hideSnoozeDetails();
+      });
     });
 
     // Edit snooze buttons
@@ -131,29 +143,46 @@ class PopupManager {
     });
   }
 
+  showSnoozeDetails(option) {
+    const detailsContainer = document.getElementById('snooze-details');
+    const unsnoozeTime = this.timeCalculator.calculateUnsnoozeTime(option);
+    const formattedTime = this.timeCalculator.formatUnsnoozeTime(unsnoozeTime);
+    detailsContainer.textContent = `Will unsnooze on: ${formattedTime}`;
+  }
+
+  hideSnoozeDetails() {
+    const detailsContainer = document.getElementById('snooze-details');
+    detailsContainer.textContent = '';
+  }
+
   updateUI() {
     this.updateSnoozedTabsList();
   }
 
   updateSnoozedTabsList() {
     const container = document.getElementById('snoozed-tabs-container');
-    const emptyState = document.getElementById('empty-state');
 
     console.log('Updating snoozed tabs list. Count:', this.snoozedTabs.length);
 
     // Clear existing snoozed tab items first
-    container.querySelectorAll('.snoozed-tab-item').forEach(item => item.remove());
+    container.innerHTML = '';
 
     // Check if we have snoozed tabs
     if (!this.snoozedTabs || this.snoozedTabs.length === 0) {
       console.log('No snoozed tabs, showing empty state');
-      emptyState.classList.remove('hidden');
+      const emptyState = document.createElement('div');
+      emptyState.id = 'empty-state';
+      emptyState.className = 'empty-state';
+      emptyState.innerHTML = `
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M12 2v20m8-10H4"/>
+        </svg>
+        <p>No snoozed tabs</p>
+        <span>Tabs you snooze will appear here</span>
+      `;
+      container.appendChild(emptyState);
       return;
     }
-
-    // Hide empty state when there are snoozed tabs
-    console.log('Have snoozed tabs, hiding empty state');
-    emptyState.classList.add('hidden');
 
     // Sort tabs by unsnooze time
     const sortedTabs = [...this.snoozedTabs].sort((a, b) => {

@@ -38,7 +38,7 @@
               <span class="option-time">6pm today</span>
             </button>
             <button class="snooze-btn" data-option="tomorrow">
-              <img src="../icons/sunrise.svg" class="option-icon" alt="Tomorrow">
+              <img src="../icons/sunrise.svg" class_name="option-icon" alt="Tomorrow">
               <span class="option-label">Tomorrow</span>
               <span class="option-time">8am tomorrow</span>
             </button>
@@ -73,6 +73,7 @@
               <span class="option-time">Indefinitely</span>
             </button>
           </div>
+          <div id="snooze-details" class="snooze-details"></div>
         </div>
       </div>
 
@@ -89,15 +90,7 @@
           <button id="clear-all-btn" class="clear-all-btn">Clear All</button>
         </div>
 
-        <div id="snoozed-tabs-container" class="snoozed-tabs-container">
-          <div id="empty-state" class="empty-state">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path d="M12 2v20m8-10H4"/>
-            </svg>
-            <p>No snoozed tabs</p>
-            <span>Tabs you snooze will appear here</span>
-          </div>
-        </div>
+        <div id="snoozed-tabs-container" class="snoozed-tabs-container"></div>
       </div>
     </div>
 
@@ -205,6 +198,6 @@
     </div>
   </div>
 
-  <script src="popup.js"></script>
+  <script type="module" src="popup.js"></script>
 </body>
 </html>

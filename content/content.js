@@ -233,15 +233,9 @@ class SnoozedTabsContent {
   // Safe message sending with comprehensive error handling
   safeSendMessage(message, callback) {
     try {
-      // Check if chrome runtime is available
-      if (!chrome || !chrome.runtime) {
-        console.debug('Chrome runtime not available');
-        return;
-      }
-
-      // Check if sendMessage function exists
-      if (typeof chrome.runtime.sendMessage !== 'function') {
-        console.debug('Chrome runtime sendMessage not available');
+      // Check if chrome runtime is available and the extension is still active
+      if (!chrome || !chrome.runtime || !chrome.runtime.id) {
+        console.debug('Extension context is no longer valid.');
         return;
       }
 
