@@ -24,7 +24,7 @@
     "browser-extension",
     "tab-organizer"
   ],
-  "author": "Cory Nava <corytrimm@navapbc.com>",
+  "author": "Cory Trimm <corytrimm@navapbc.com>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/cory-nava/snoozed-tabs-extension/issues"
