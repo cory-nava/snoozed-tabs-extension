@@ -12,6 +12,8 @@ Snoozed Tabs isn't in the Chrome Web Store, so you install it from this reposito
 
 Go to the [latest release](https://github.com/cory-nava/snoozed-tabs-extension/releases/latest) and, under **Assets**, download `snoozed-tabs-<version>.zip`. Unzip it to get a folder named `snoozed-tabs`.
 
+<img src="docs/images/github-release-download.png" alt="The release page with snoozed-tabs-1.1.0.zip listed under Assets" width="720">
+
 > **Move that folder somewhere permanent before continuing**, for example `Documents/Chrome Extensions/`. Chrome runs the extension straight from this folder. If you delete the folder or leave it in Downloads and clean that out later, the extension stops working.
 
 ### 2. Load it into Chrome
