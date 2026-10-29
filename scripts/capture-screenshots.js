@@ -1,5 +1,5 @@
 // Regenerates the README screenshots in docs/images. Run: npm run screenshots
-// Needs network access for favicons and the GitHub "Download ZIP" shot.
+// Needs network access for favicons and the GitHub release page.
 const { chromium } = require('@playwright/test');
 const path = require('path');
 const fs = require('fs');
@@ -64,14 +64,19 @@ fs.mkdirSync(out, { recursive: true });
   const card = ext.locator('extensions-item').first();
   await card.screenshot({ path: path.join(out, 'chrome-extensions-card.png') });
 
-  // 5. GitHub "Code" menu with Download ZIP
+  // 5. The latest GitHub release with its downloadable ZIP (skipped until a release exists)
   const gh = await ctx.newPage();
-  await gh.setViewportSize({ width: 1280, height: 760 });
-  await gh.goto('https://github.com/cory-nava/snoozed-tabs-extension');
-  await gh.getByRole('button', { name: 'Code' }).first().click();
-  await gh.getByText('Download ZIP').waitFor();
-  await gh.waitForTimeout(500);
-  await gh.screenshot({ path: path.join(out, 'github-download-zip.png'), clip: { x: 500, y: 150, width: 780, height: 560 } });
+  await gh.setViewportSize({ width: 1280, height: 900 });
+  const response = await gh.goto('https://github.com/cory-nava/snoozed-tabs-extension/releases/latest');
+  if (response.ok() && gh.url().includes('/releases/tag/')) {
+    const asset = gh.locator('a[href$=".zip"][href*="/releases/download/"]').first();
+    await asset.waitFor();
+    await asset.scrollIntoViewIfNeeded();
+    await gh.waitForTimeout(500);
+    await gh.screenshot({ path: path.join(out, 'github-release-download.png') });
+  } else {
+    console.log('No GitHub release yet; skipped github-release-download.png');
+  }
 
   await ctx.close();
 })().catch(e => { console.error(e); process.exit(1); });

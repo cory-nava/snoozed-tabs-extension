@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Snoozed Tabs",
   "description": "Snooze tabs for later viewing with flexible scheduling options",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvN37QCU4ujYBEVIGRTks+edRhklUauyMbzHT0jkCFj4pd3GAtkukHsH4PCLCweh92RuYuXF2sMX843fmA2a9mTK5OljZQL2NfdlMOawjZZpToDcU1ZWkIYfSHNAETZvztajC497eoeQV7rG8SH9rJwzVYVLXauV/dQ1jirVi/NQZGyg2hmbzpTu1S8S+09Ndma5FrgLHfbxuGyFuskSHaCEJg9ZtCHm+HkYhv+iCHH0ouZGbJ2qMav6PLYnOeXFPqmUPkqT54nTv0nEm2g+ZOV14LWXT1iPk0Uilg3BIrYtElLlbtJK+Mz8msWNO+IxFWU9Y8Kdso4jAo4WDisR7ZQIDAQAB",
   "author": "Cory Nava",
   "permissions": [

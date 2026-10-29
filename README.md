@@ -10,22 +10,16 @@ Snoozed Tabs isn't in the Chrome Web Store, so you install it from this reposito
 
 ### 1. Download the extension
 
-On this repository's GitHub page, click the green **Code** button, then **Download ZIP**.
-
-<img src="docs/images/github-download-zip.png" alt="GitHub Code menu with Download ZIP at the bottom" width="520">
-
-Unzip the file. You'll get a folder named `snoozed-tabs-extension-main`.
+Go to the [latest release](https://github.com/cory-nava/snoozed-tabs-extension/releases/latest) and, under **Assets**, download `snoozed-tabs-<version>.zip`. Unzip it to get a folder named `snoozed-tabs`.
 
 > **Move that folder somewhere permanent before continuing**, for example `Documents/Chrome Extensions/`. Chrome runs the extension straight from this folder. If you delete the folder or leave it in Downloads and clean that out later, the extension stops working.
-
-If you use git, `git clone https://github.com/cory-nava/snoozed-tabs-extension.git` works too.
 
 ### 2. Load it into Chrome
 
 1. Open a new tab and go to `chrome://extensions`.
 2. Turn on **Developer mode** (top right).
 3. Click **Load unpacked** (top left).
-4. Select the folder from step 1, the one that directly contains `manifest.json`, and click **Select**.
+4. Select the `snoozed-tabs` folder from step 1 (the one that directly contains `manifest.json`) and click **Select**.
 
 <img src="docs/images/chrome-extensions-dev-mode.png" alt="chrome://extensions with Developer mode switched on and the Load unpacked button" width="720">
 
@@ -78,8 +72,10 @@ When a snoozed tab's time comes, it reopens as a background tab in your current 
 
 ## Updating to a new version
 
-1. Download the new ZIP as in step 1.
-2. Replace the contents of your existing extension folder with the new files. (Loading the new folder in a different place also works; your snoozed tabs carry over either way.)
+To see which version you have, look at the number next to the name on the Snoozed Tabs card in `chrome://extensions`. [Releases](https://github.com/cory-nava/snoozed-tabs-extension/releases) lists what changed in each version.
+
+1. Download the new ZIP from the [latest release](https://github.com/cory-nava/snoozed-tabs-extension/releases/latest).
+2. Replace the contents of your existing `snoozed-tabs` folder with the new files. (Loading the new folder from a different place also works; your snoozed tabs carry over either way.)
 3. Go to `chrome://extensions` and click the **reload** arrow (↻) on the Snoozed Tabs card.
 
 ## Troubleshooting
@@ -89,6 +85,8 @@ When a snoozed tab's time comes, it reopens as a background tab in your current 
 **The extension disappeared or shows an error after I moved its folder**: Chrome only knows the old location. Click **Remove** on the card, then **Load unpacked** again and select the new location. Your snoozed tabs are kept as long as you load the same extension (it has a fixed ID).
 
 **A tab didn't come back**: check that Chrome was open at the scheduled time. Overdue tabs reopen when Chrome next starts. If one is still missing, go to `chrome://extensions`, click **service worker** on the Snoozed Tabs card, and check the console for errors.
+
+**Found a security problem?** Please report it privately as described in [SECURITY.md](SECURITY.md), not in a public issue.
 
 **Something else is wrong**: [open an issue](https://github.com/cory-nava/snoozed-tabs-extension/issues) and include your Chrome version (from `chrome://version`).
 
@@ -101,6 +99,7 @@ npx playwright install chromium   # once, for the end-to-end tests
 npm test             # unit tests (Jest)
 npm run test:e2e     # loads the real extension into Chromium (Playwright)
 npm run lint
+npm run package      # builds dist/snoozed-tabs-<version>.zip, the file people download
 npm run screenshots  # regenerates the images in docs/images
 ```
 
@@ -113,12 +112,26 @@ After changing code, click the reload arrow (↻) on the extension's card in `ch
 - `utils/time.js` calculates snooze times. `popup/` is the toolbar popup.
 - The `key` in `manifest.json` gives the extension the same ID wherever it's loaded from, so snoozed tabs survive reinstalling from a new folder.
 
+### Releasing a new version
+
+1. Update the `version` in both `manifest.json` and `package.json`, and add a section for it to [CHANGELOG.md](CHANGELOG.md).
+2. Merge to `main`.
+3. Tag the merge commit and push the tag: `git tag v1.2.0 && git push origin v1.2.0`.
+
+The [release workflow](.github/workflows/release.yml) checks that the tag matches the version, runs all the tests against the built ZIP, and publishes a GitHub Release with that version's changelog section as its notes.
+
 ### Tests
 
 - `tests/background.test.js`: the service worker against an in-memory fake of the `chrome` API (`tests/helpers/fakeChrome.js`), including the overlapping-unsnooze and parallel-write cases.
 - `tests/popup.test.js`: the popup in jsdom.
 - `tests/time.test.js`: snooze-time math with a frozen clock in UTC.
 - `tests/e2e/`: real Chromium, including stopping the service worker so an alarm has to wake it. Set `EXTENSION_DIR=/path/to/other/build` to run the suite against another copy of the extension.
+
+Every pull request runs lint, the unit tests and the end-to-end tests ([test workflow](.github/workflows/test.yml)), plus CodeQL code scanning. Dependabot checks the development dependencies and GitHub Actions weekly.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) and our [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## License
 
