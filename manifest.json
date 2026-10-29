@@ -2,9 +2,9 @@
   "manifest_version": 3,
   "name": "Snoozed Tabs",
   "description": "Snooze tabs for later viewing with flexible scheduling options",
-  "version": "1.0.0",
-  "author": "Cory Nava",
-  
+  "version": "1.1.0",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvN37QCU4ujYBEVIGRTks+edRhklUauyMbzHT0jkCFj4pd3GAtkukHsH4PCLCweh92RuYuXF2sMX843fmA2a9mTK5OljZQL2NfdlMOawjZZpToDcU1ZWkIYfSHNAETZvztajC497eoeQV7rG8SH9rJwzVYVLXauV/dQ1jirVi/NQZGyg2hmbzpTu1S8S+09Ndma5FrgLHfbxuGyFuskSHaCEJg9ZtCHm+HkYhv+iCHH0ouZGbJ2qMav6PLYnOeXFPqmUPkqT54nTv0nEm2g+ZOV14LWXT1iPk0Uilg3BIrYtElLlbtJK+Mz8msWNO+IxFWU9Y8Kdso4jAo4WDisR7ZQIDAQAB",
+  "author": "Cory Trimm",
   "permissions": [
     "tabs",
     "storage",
@@ -12,11 +12,10 @@
     "contextMenus",
     "alarms"
   ],
-  
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background.js",
+    "type": "module"
   },
-  
   "action": {
     "default_popup": "popup/popup.html",
     "default_title": "Snooze Tab",
@@ -27,21 +26,6 @@
       "128": "icons/icon128.png"
     }
   },
-  
-  "content_scripts": [
-    {
-      "matches": ["<all_urls>"],
-      "js": ["content/content.js"]
-    }
-  ],
-  
-  "web_accessible_resources": [
-    {
-      "resources": ["popup/*", "styles/*"],
-      "matches": ["<all_urls>"]
-    }
-  ],
-  
   "icons": {
     "16": "icons/icon16.png",
     "32": "icons/icon32.png",

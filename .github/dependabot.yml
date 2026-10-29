@@ -1,0 +1,15 @@
+version: 2
+updates:
+  # All npm packages are development tools; the extension itself ships no dependencies
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      dev-tools:
+        patterns: ['*']
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly

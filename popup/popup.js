@@ -1,6 +1,6 @@
 import { TimeCalculator } from '../utils/time.js';
 
-class PopupManager {
+export class PopupManager {
   constructor() {
     this.currentTab = null;
     this.snoozedTabs = [];
@@ -203,15 +203,14 @@ class PopupManager {
     div.className = 'snoozed-tab-item';
     div.dataset.tabId = tab.id;
 
-    const unsnoozeTimeText = this.formatUnsnoozeTime(tab.unsnoozeAt);
-    const timeUntilText = this.getTimeUntilUnsnooze(tab.unsnoozeAt);
-
+    // Title, URL and favicon come from arbitrary web pages, so they are only ever
+    // assigned as text/attributes below, never interpolated into HTML
     div.innerHTML = `
-      <img class="favicon" src="${tab.favIconUrl || '/icons/default-favicon.png'}" alt="">
+      <img class="favicon" alt="">
       <div class="snoozed-tab-content">
-        <div class="snooze-time">${unsnoozeTimeText} (${timeUntilText})</div>
-        <div class="tab-title">${tab.title || 'Untitled Tab'}</div>
-        <div class="tab-url">${this.getDomain(tab.url)}</div>
+        <div class="snooze-time"></div>
+        <div class="tab-title"></div>
+        <div class="tab-url"></div>
       </div>
       <div class="snoozed-tab-actions">
         <button class="action-btn edit" title="Edit snooze time">
@@ -232,6 +231,13 @@ class PopupManager {
         </button>
       </div>
     `;
+
+    const unsnoozeTimeText = this.timeCalculator.formatUnsnoozeTime(tab.unsnoozeAt);
+    const timeUntilText = this.timeCalculator.getTimeUntilUnsnooze(tab.unsnoozeAt);
+    div.querySelector('.snooze-time').textContent =
+      timeUntilText ? `${unsnoozeTimeText} (${timeUntilText})` : unsnoozeTimeText;
+    div.querySelector('.tab-title').textContent = tab.title || 'Untitled Tab';
+    div.querySelector('.tab-url').textContent = this.getDomain(tab.url);
 
     // Add click handler to entire tab item to unsnooze
     div.addEventListener('click', (e) => {
@@ -271,6 +277,7 @@ class PopupManager {
     favicon.onerror = () => {
       favicon.src = '/icons/default-favicon.png';
     };
+    favicon.src = tab.favIconUrl || '/icons/default-favicon.png';
 
     return div;
   }
@@ -545,50 +552,6 @@ class PopupManager {
       return new URL(url).hostname;
     } catch {
       return 'Unknown';
-    }
-  }
-
-  formatUnsnoozeTime(timestamp) {
-    if (timestamp === new Date('2099-12-31').getTime()) {
-      return 'Someday';
-    }
-
-    const date = new Date(timestamp);
-    const now = new Date();
-
-    const isToday = date.toDateString() === now.toDateString();
-    const isTomorrow = date.toDateString() === new Date(now.getTime() + 24 * 60 * 60 * 1000).toDateString();
-
-    if (isToday) {
-      return `Today at ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-    } else if (isTomorrow) {
-      return `Tomorrow at ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-    } else {
-      return date.toLocaleString([], {
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
-    }
-  }
-
-  getTimeUntilUnsnooze(timestamp) {
-    const now = Date.now();
-    const diff = timestamp - now;
-
-    if (diff <= 0) return 'Overdue';
-
-    const minutes = Math.floor(diff / (1000 * 60));
-    const hours = Math.floor(minutes / 60);
-    const days = Math.floor(hours / 24);
-
-    if (days > 0) {
-      return `${days} day${days > 1 ? 's' : ''}`;
-    } else if (hours > 0) {
-      return `${hours} hour${hours > 1 ? 's' : ''}`;
-    } else {
-      return `${minutes} minute${minutes > 1 ? 's' : ''}`;
     }
   }
 }

@@ -1,279 +1,138 @@
-# Snoozed Tabs Chrome Extension
+# Snoozed Tabs
 
-A Chrome extension that allows you to snooze tabs for later viewing with flexible scheduling options. Keep your browser organized by temporarily hiding tabs until you need them.
+A Chrome extension that closes a tab now and brings it back later: tonight, tomorrow morning, next week, or whenever you pick.
 
-## ✨ Features
+<img src="docs/images/popup-snooze-options.png" alt="The Snoozed Tabs popup showing nine snooze options" width="420">
 
-- **Flexible Snoozing Options**: Choose from 9 different snooze durations:
-  - **Later Today**: 3 hours from now
-  - **Tonight**: 6pm today
-  - **Tomorrow**: 8am tomorrow
-  - **Later This Week**: 3 days from now
-  - **This Weekend**: 8am Saturday
-  - **Next Week**: 8am next Monday
-  - **In a Couple Weeks**: 2 weeks from now
-  - **Next Month**: 30 days from now
-  - **Someday**: Indefinitely
+## Install (about 5 minutes, no coding needed)
 
-- **Intuitive Management**: View, edit, and remove snoozed tabs easily
-- **Automatic Restoration**: Tabs automatically reappear when their snooze time expires
-- **Modern UI**: Clean, accessible interface styled with Tailwind-inspired design
-- **Context Menu Integration**: Right-click on tabs to snooze them
-- **Persistent Storage**: Snoozed tabs persist across browser sessions
+Snoozed Tabs isn't in the Chrome Web Store, so you install it from this repository using Chrome's "Load unpacked" option.
 
-## 🚀 Installation
+### 1. Download the extension
 
-### From Source (Development)
+Go to the [latest release](https://github.com/cory-nava/snoozed-tabs-extension/releases/latest) and, under **Assets**, download `snoozed-tabs-<version>.zip`. Unzip it to get a folder named `snoozed-tabs`.
 
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/cory-nava/snoozed-tabs-extension.git
-   cd snoozed-tabs-extension
-   ```
+> **Move that folder somewhere permanent before continuing**, for example `Documents/Chrome Extensions/`. Chrome runs the extension straight from this folder. If you delete the folder or leave it in Downloads and clean that out later, the extension stops working.
 
-2. **Install dependencies** (optional, for development):
-   ```bash
-   npm install
-   ```
+### 2. Load it into Chrome
 
-3. **Load the extension in Chrome**:
-   - Open Chrome and go to `chrome://extensions/`
-   - Enable "Developer mode" in the top right
-   - Click "Load unpacked" and select the project directory
-   - The extension should now appear in your browser toolbar
+1. Open a new tab and go to `chrome://extensions`.
+2. Turn on **Developer mode** (top right).
+3. Click **Load unpacked** (top left).
+4. Select the `snoozed-tabs` folder from step 1 (the one that directly contains `manifest.json`) and click **Select**.
 
-### From Chrome Web Store
+<img src="docs/images/chrome-extensions-dev-mode.png" alt="chrome://extensions with Developer mode switched on and the Load unpacked button" width="720">
 
-*Coming soon - extension will be published to the Chrome Web Store*
+Snoozed Tabs now appears in your list of extensions:
 
-## 🎯 Usage
+<img src="docs/images/chrome-extensions-card.png" alt="The Snoozed Tabs card on chrome://extensions" width="400">
 
-### Snoozing a Tab
+### 3. Pin it to your toolbar
 
-1. **Using the Extension Popup**:
-   - Click the Snoozed Tabs icon in your toolbar
-   - Select your desired snooze duration
-   - The current tab will be closed and snoozed
+Click the puzzle-piece **Extensions** icon to the right of the address bar, then click the pin next to **Snoozed Tabs**. The clock icon now stays in your toolbar.
 
-2. **Using the Context Menu**:
-   - Right-click on any tab
-   - Select "Snooze Tab"
-   - Choose your snooze duration
+## Using it
 
-### Managing Snoozed Tabs
+### Snooze a tab
 
-1. **View Snoozed Tabs**:
-   - Click the extension icon
-   - Click "View Snoozed" to see all your snoozed tabs
+Click the clock icon in the toolbar and pick when you want the tab back. The tab closes right away. Hover over an option to see the exact time it will return.
 
-2. **Edit Snooze Time**:
-   - In the snoozed tabs list, click the edit icon (pencil)
-   - Choose a new snooze duration
+| Option | Comes back |
+| --- | --- |
+| Later Today | 3 hours from now |
+| Tonight | 6pm today (or 6pm tomorrow if it's already past 6pm) |
+| Tomorrow | 8am tomorrow |
+| Later This Week | 3 days from now |
+| This Weekend | 8am Saturday |
+| Next Week | 8am Monday |
+| In a Couple Weeks | 2 weeks from now |
+| Next Month | 30 days from now |
+| Someday | Only when you bring it back yourself |
 
-3. **Unsnooze Immediately**:
-   - Click the unsnooze icon (plus) to restore the tab now
+You can also right-click anywhere on a page and choose **Snooze Tab**.
 
-4. **Remove Permanently**:
-   - Click the remove icon (×) to delete the snoozed tab
+### See and manage snoozed tabs
 
-5. **Clear All**:
-   - Click "Clear All" to remove all snoozed tabs
+Click the clock icon, then **View Snoozed**.
 
-## 🛠️ Development
+<img src="docs/images/popup-snoozed-list.png" alt="The list of snoozed tabs with edit, unsnooze and remove buttons" width="420">
 
-### Project Structure
+- **Click a tab** or the **+** button to open it now.
+- **Pencil** to pick a different time.
+- **×** to delete it without opening it.
+- **Clear All** to delete everything (it asks first).
 
-```
-snoozed-tabs-extension/
-├── manifest.json              # Extension manifest
-├── background.js             # Service worker (main logic)
-├── popup/
-│   ├── popup.html           # Extension popup UI
-│   ├── popup.js             # Popup JavaScript
-│   └── popup.css            # Popup styling
-├── content/
-│   └── content.js           # Content script
-├── styles/
-│   └── popup.css            # Shared styles
-├── utils/
-│   ├── storage.js           # Storage management
-│   ├── time.js              # Time calculations
-│   └── tabManager.js        # Tab operations
-├── icons/                   # Extension icons
-├── tests/                   # Test files
-└── package.json             # Dependencies and scripts
-```
+When a snoozed tab's time comes, it reopens as a background tab in your current window.
 
-### Key Components
+### Good to know
 
-1. **Background Service Worker** (`background.js`):
-   - Handles tab snoozing/unsnoozing
-   - Manages alarms for automatic restoration
-   - Provides messaging interface
+- **Chrome has to be running** for a tab to come back on time. If Chrome was closed, overdue tabs reopen the next time you start it.
+- Snoozed tabs are saved in this Chrome profile on this computer only. They don't sync to other machines.
+- **Removing the extension deletes your snoozed tabs.** Updating it (below) does not.
 
-2. **Time Calculator** (`utils/time.js`):
-   - Calculates snooze end times
-   - Formats time displays
-   - Handles different time zones
+## Updating to a new version
 
-3. **Storage Manager** (`utils/storage.js`):
-   - Manages persistent storage
-   - Handles data serialization
-   - Provides backup/restore functionality
+To see which version you have, look at the number next to the name on the Snoozed Tabs card in `chrome://extensions`. [Releases](https://github.com/cory-nava/snoozed-tabs-extension/releases) lists what changed in each version.
 
-4. **Tab Manager** (`utils/tabManager.js`):
-   - Handles Chrome tab operations
-   - Manages tab metadata
-   - Provides tab utilities
+1. Download the new ZIP from the [latest release](https://github.com/cory-nava/snoozed-tabs-extension/releases/latest).
+2. Replace the contents of your existing `snoozed-tabs` folder with the new files. (Loading the new folder from a different place also works; your snoozed tabs carry over either way.)
+3. Go to `chrome://extensions` and click the **reload** arrow (↻) on the Snoozed Tabs card.
 
-5. **Popup Interface** (`popup/`):
-   - User interface for snoozing
-   - Snoozed tabs management
-   - Modal for editing snooze times
+## Troubleshooting
 
-### Development Commands
+**"Manifest file is missing or unreadable"**: you selected the wrong folder. Pick the folder that has `manifest.json` directly inside it. Unzipping sometimes creates a folder inside another folder with the same name.
+
+**The extension disappeared or shows an error after I moved its folder**: Chrome only knows the old location. Click **Remove** on the card, then **Load unpacked** again and select the new location. Your snoozed tabs are kept as long as you load the same extension (it has a fixed ID).
+
+**A tab didn't come back**: check that Chrome was open at the scheduled time. Overdue tabs reopen when Chrome next starts. If one is still missing, go to `chrome://extensions`, click **service worker** on the Snoozed Tabs card, and check the console for errors.
+
+**Found a security problem?** Please report it privately as described in [SECURITY.md](SECURITY.md), not in a public issue.
+
+**Something else is wrong**: [open an issue](https://github.com/cory-nava/snoozed-tabs-extension/issues) and include your Chrome version (from `chrome://version`).
+
+## Development
 
 ```bash
-# Install dependencies
 npm install
+npx playwright install chromium   # once, for the end-to-end tests
 
-# Run tests
-npm test
-
-# Lint code
+npm test             # unit tests (Jest)
+npm run test:e2e     # loads the real extension into Chromium (Playwright)
 npm run lint
-
-# Build for production
-npm run build
-
-# Package extension
-npm run package
+npm run package      # builds dist/snoozed-tabs-<version>.zip, the file people download
+npm run screenshots  # regenerates the images in docs/images
 ```
 
-### Testing
+After changing code, click the reload arrow (↻) on the extension's card in `chrome://extensions`.
 
-The extension includes comprehensive tests:
+### How it works
 
-```bash
-# Run all tests
-npm test
+- `background.js` starts the service worker, and `background/snoozeService.js` does the work. Snoozing saves the tab to `chrome.storage.local`, schedules a `chrome.alarms` alarm, and closes the tab. When the alarm fires, the tab reopens.
+- `utils/storage.js` makes every change to the snoozed list one at a time. Chrome can wake the service worker with an alarm at the same moment its startup check finds the same tab overdue. Unsnoozing removes the entry first, and only the caller that removed it opens the tab, so it can't open twice.
+- `utils/time.js` calculates snooze times. `popup/` is the toolbar popup.
+- The `key` in `manifest.json` gives the extension the same ID wherever it's loaded from, so snoozed tabs survive reinstalling from a new folder.
 
-# Run tests with coverage
-npm run test -- --coverage
+### Releasing a new version
 
-# Run tests in watch mode
-npm run test -- --watch
-```
+1. Update the `version` in both `manifest.json` and `package.json`, and add a section for it to [CHANGELOG.md](CHANGELOG.md).
+2. Merge to `main`.
+3. Tag the merge commit and push the tag: `git tag v1.2.0 && git push origin v1.2.0`.
 
-### Code Style
+The [release workflow](.github/workflows/release.yml) checks that the tag matches the version, runs all the tests against the built ZIP, and publishes a GitHub Release with that version's changelog section as its notes.
 
-- ES6+ JavaScript with modules
-- Consistent error handling
-- Comprehensive JSDoc comments
-- Accessibility considerations
-- Modern CSS with custom properties
+### Tests
 
-## 🔧 Technical Details
+- `tests/background.test.js`: the service worker against an in-memory fake of the `chrome` API (`tests/helpers/fakeChrome.js`), including the overlapping-unsnooze and parallel-write cases.
+- `tests/popup.test.js`: the popup in jsdom.
+- `tests/time.test.js`: snooze-time math with a frozen clock in UTC.
+- `tests/e2e/`: real Chromium, including stopping the service worker so an alarm has to wake it. Set `EXTENSION_DIR=/path/to/other/build` to run the suite against another copy of the extension.
 
-### Permissions
+Every pull request runs lint, the unit tests and the end-to-end tests ([test workflow](.github/workflows/test.yml)), plus CodeQL code scanning. Dependabot checks the development dependencies and GitHub Actions weekly.
 
-The extension requires these permissions:
-- `tabs`: To access and manipulate browser tabs
-- `storage`: To persist snoozed tab data
-- `alarms`: To schedule automatic tab restoration
-- `contextMenus`: To add right-click menu options
-- `activeTab`: To get current tab information
+## Contributing
 
-### Storage Format
+See [CONTRIBUTING.md](CONTRIBUTING.md) and our [Code of Conduct](CODE_OF_CONDUCT.md).
 
-Snoozed tabs are stored in Chrome's local storage:
+## License
 
-```javascript
-{
-  id: 'snoozed_${timestamp}_${tabId}',
-  originalTabId: number,
-  url: string,
-  title: string,
-  favIconUrl: string,
-  snoozeOption: string,
-  snoozedAt: number,
-  unsnoozeAt: number,
-  windowId: number
-}
-```
-
-### Alarm System
-
-The extension uses Chrome's `chrome.alarms` API to schedule tab restoration:
-- Each snoozed tab gets its own alarm
-- Alarms are cleared when tabs are manually unsnoozed
-- Expired alarms trigger automatic tab restoration
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-1. **Extension Not Working**:
-   - Check that Developer Mode is enabled
-   - Reload the extension from `chrome://extensions/`
-   - Check the console for errors
-
-2. **Tabs Not Restoring**:
-   - Ensure Chrome is running when the snooze time expires
-   - Check that the extension has proper permissions
-   - Verify alarms are being created (check background script logs)
-
-3. **Storage Issues**:
-   - Extension data is cleared when Chrome is reset
-   - Check available storage space
-   - Verify storage permissions are granted
-
-### Debug Mode
-
-Enable debug logging by opening the extension's background script console:
-1. Go to `chrome://extensions/`
-2. Find "Snoozed Tabs" extension
-3. Click "background page" or "service worker"
-4. Check console for detailed logs
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-### Development Setup
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Make your changes
-4. Add tests for new functionality
-5. Ensure all tests pass: `npm test`
-6. Commit your changes: `git commit -m 'Add amazing feature'`
-7. Push to the branch: `git push origin feature/amazing-feature`
-8. Open a Pull Request
-
-### Code Guidelines
-
-- Follow the existing code style
-- Add JSDoc comments for new functions
-- Include tests for new features
-- Update documentation as needed
-- Ensure accessibility compliance
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- Chrome Extension documentation and APIs
-- Tailwind CSS for design inspiration
-- Modern web development best practices
-- Accessibility guidelines and standards
-
-## 📧 Support
-
-For bug reports and feature requests, please use the [GitHub Issues](https://github.com/cory-nava/snoozed-tabs-extension/issues) page.
-
----
-
-**Made with ❤️ by [Cory Nava](https://github.com/cory-nava)**
+MIT. See [LICENSE](LICENSE).
