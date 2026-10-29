@@ -1,27 +1,10 @@
 // Test file for Snoozed Tabs Extension
 // Run: npm test
 
-const { TimeCalculator } = require('../utils/time.js');
+import { TimeCalculator, SOMEDAY_TIMESTAMP } from '../utils/time.js';
 
-// Mock chrome APIs for testing
-global.chrome = {
-  storage: {
-    local: {
-      get: jest.fn(),
-      set: jest.fn()
-    }
-  },
-  tabs: {
-    query: jest.fn(),
-    get: jest.fn(),
-    create: jest.fn(),
-    remove: jest.fn()
-  },
-  alarms: {
-    create: jest.fn(),
-    clear: jest.fn()
-  }
-};
+// Tests run in UTC (see tests/globalSetup.js) with a frozen clock.
+const freezeTime = iso => jest.useFakeTimers().setSystemTime(new Date(iso));
 
 describe('TimeCalculator', () => {
   let timeCalculator;
@@ -29,11 +12,11 @@ describe('TimeCalculator', () => {
   beforeEach(() => {
     timeCalculator = new TimeCalculator();
     // Mock current time to a fixed date for consistent testing
-    jest.spyOn(Date, 'now').mockReturnValue(new Date('2025-07-17T12:00:00Z').getTime());
+    freezeTime('2025-07-17T12:00:00Z'); // a Thursday
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    jest.useRealTimers();
   });
 
   describe('calculateUnsnoozeTime', () => {
@@ -141,7 +124,7 @@ describe('TimeCalculator', () => {
   describe('weekend calculation', () => {
     test('should calculate next Saturday correctly', () => {
       // Mock current time to be a Wednesday
-      jest.spyOn(Date, 'now').mockReturnValue(new Date('2025-07-16T12:00:00Z').getTime());
+      freezeTime('2025-07-16T12:00:00Z');
       
       const result = timeCalculator.calculateUnsnoozeTime('this-weekend');
       const expected = new Date('2025-07-19T08:00:00Z').getTime(); // Saturday at 8am
@@ -150,7 +133,7 @@ describe('TimeCalculator', () => {
 
     test('should calculate next Monday correctly', () => {
       // Mock current time to be a Wednesday
-      jest.spyOn(Date, 'now').mockReturnValue(new Date('2025-07-16T12:00:00Z').getTime());
+      freezeTime('2025-07-16T12:00:00Z');
       
       const result = timeCalculator.calculateUnsnoozeTime('next-week');
       const expected = new Date('2025-07-21T08:00:00Z').getTime(); // Monday at 8am
@@ -234,5 +217,41 @@ describe('Integration Tests', () => {
     expect(formatted).toBeTruthy();
     expect(timeUntil).toBeTruthy();
     expect(timeUntil).not.toBe('Overdue');
+  });
+});
+
+describe('edge cases', () => {
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  test('"tonight" after 6pm rolls over to 6pm tomorrow', () => {
+    freezeTime('2025-07-17T19:30:00Z');
+    expect(new TimeCalculator().calculateUnsnoozeTime('tonight'))
+      .toBe(new Date('2025-07-18T18:00:00Z').getTime());
+  });
+
+  test('"this weekend" on a Saturday means next Saturday', () => {
+    freezeTime('2025-07-19T09:00:00Z');
+    expect(new TimeCalculator().calculateUnsnoozeTime('this-weekend'))
+      .toBe(new Date('2025-07-26T08:00:00Z').getTime());
+  });
+
+  test('"next week" on a Sunday means the next day', () => {
+    freezeTime('2025-07-20T09:00:00Z');
+    expect(new TimeCalculator().calculateUnsnoozeTime('next-week'))
+      .toBe(new Date('2025-07-21T08:00:00Z').getTime());
+  });
+
+  test('every option returns a time in the future', () => {
+    freezeTime('2025-07-17T23:59:00Z');
+    const calc = new TimeCalculator();
+    for (const option of Object.keys(calc.snoozeOptions)) {
+      expect(calc.calculateUnsnoozeTime(option)).toBeGreaterThan(Date.now());
+    }
+  });
+
+  test('"someday" has no countdown', () => {
+    expect(new TimeCalculator().getTimeUntilUnsnooze(SOMEDAY_TIMESTAMP)).toBeNull();
   });
 });

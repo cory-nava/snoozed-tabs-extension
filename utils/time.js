@@ -1,3 +1,6 @@
+// "Someday" tabs are stored with this far-future timestamp and never get an alarm
+export const SOMEDAY_TIMESTAMP = new Date('2099-12-31').getTime();
+
 export class TimeCalculator {
   constructor() {
     this.snoozeOptions = {
@@ -42,7 +45,7 @@ export class TimeCalculator {
         return this.addDays(now, 30).getTime();
         
       case 'someday':
-        return new Date('2099-12-31').getTime(); // Far future date
+        return SOMEDAY_TIMESTAMP;
         
       default:
         return this.addHours(now, 3).getTime();
@@ -107,7 +110,7 @@ export class TimeCalculator {
   }
 
   formatUnsnoozeTime(timestamp) {
-    if (timestamp === new Date('2099-12-31').getTime()) {
+    if (timestamp === SOMEDAY_TIMESTAMP) {
       return 'Someday';
     }
     
@@ -135,7 +138,10 @@ export class TimeCalculator {
     return this.snoozeOptions[option] || option;
   }
 
+  // Returns null for "someday" tabs, which have no meaningful countdown
   getTimeUntilUnsnooze(timestamp) {
+    if (timestamp === SOMEDAY_TIMESTAMP) return null;
+
     const now = Date.now();
     const diff = timestamp - now;
     

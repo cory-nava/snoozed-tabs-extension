@@ -102,3 +102,7 @@ test-results.xml
 
 # Chrome extension development
 .web-extension-id
+
+# Playwright
+playwright-report/
+test-results/

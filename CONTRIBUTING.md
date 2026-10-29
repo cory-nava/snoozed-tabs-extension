@@ -19,10 +19,11 @@ Thank you for your interest in contributing to the Snoozed Tabs Extension! This 
    cd snoozed-tabs-extension
    ```
 
-2. **Run the setup script**:
+2. **Install dependencies and check everything passes**:
    ```bash
-   chmod +x setup.sh
-   ./setup.sh
+   npm install
+   npx playwright install chromium   # once, for the end-to-end tests
+   npm run lint && npm test && npm run test:e2e
    ```
 
 3. **Load the extension in Chrome**:
@@ -57,9 +58,9 @@ Thank you for your interest in contributing to the Snoozed Tabs Extension! This 
 ```
 snoozed-tabs-extension/
 ├── manifest.json              # Extension manifest
-├── background.js             # Service worker
+├── background.js             # Service worker entry point
+├── background/               # Service worker logic
 ├── popup/                    # Popup interface
-├── content/                  # Content scripts
 ├── utils/                    # Utility modules
 ├── styles/                   # CSS files
 ├── icons/                    # Extension icons
@@ -90,9 +91,11 @@ snoozed-tabs-extension/
 
 3. **Test your changes**:
    ```bash
-   npm test
+   npm test             # unit tests
+   npm run test:e2e     # real Chromium; run `npx playwright install chromium` once first
    npm run lint
    ```
+   If you changed the popup, run `npm run screenshots` to refresh the README images.
 
 4. **Commit your changes**:
    ```bash
