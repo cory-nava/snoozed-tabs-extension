@@ -15,7 +15,8 @@ const flush = async () => {
 
 // Renders the popup against a fake background that answers with `snoozedTabs`.
 async function renderPopup(snoozedTabs = []) {
-  document.documentElement.innerHTML = popupHtml.replace(/<script[\s\S]*?<\/script>/g, '');
+  // jsdom doesn't run scripts by default, so popup.html's own <script> tag stays inert
+  document.documentElement.innerHTML = popupHtml;
   const sent = [];
   global.chrome = {
     runtime: {
